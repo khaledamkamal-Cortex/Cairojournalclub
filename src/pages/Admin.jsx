@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Admin, Events, Materials, News, Members, Commentaries, Courses, resetDemo } from '../lib/store'
+import { supabaseEnabled } from '../lib/supabase'
 import { useStore } from '../lib/useStore'
 import LmsAdmin from './LmsAdmin'
 
@@ -10,9 +11,15 @@ export default function AdminPage() {
 }
 
 function AdminLogin() {
+  const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
   const [error, setError] = useState('')
-  const submit = (e) => { e.preventDefault(); try { Admin.login(pw) } catch (err) { setError(err.message) } }
+  const [busy, setBusy] = useState(false)
+  const submit = async (e) => {
+    e.preventDefault(); setError(''); setBusy(true)
+    try { await (supabaseEnabled ? Admin.login(email, pw) : Admin.login(pw)) }
+    catch (err) { setError(err.message) } finally { setBusy(false) }
+  }
   return (
     <>
       <div className="page-head"><div className="container"><h1>Admin Panel</h1><p>Restricted access.</p></div></div>
@@ -20,9 +27,10 @@ function AdminLogin() {
         <div className="container" style={{ maxWidth: 420 }}>
           {error && <div className="alert alert-error">{error}</div>}
           <form className="form card" onSubmit={submit}>
-            <div><label>Admin password</label><input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoFocus /></div>
-            <button className="btn btn-primary" type="submit">Log in</button>
-            <p className="form-note">Demo password: <b>cairo-admin</b></p>
+            {supabaseEnabled && <div><label>Admin email</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus placeholder="you@example.com" /></div>}
+            <div><label>{supabaseEnabled ? 'Password' : 'Admin password'}</label><input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoFocus={!supabaseEnabled} /></div>
+            <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Please wait…' : 'Log in'}</button>
+            <p className="form-note">{supabaseEnabled ? 'Log in with your registered admin account.' : <>Demo password: <b>cairo-admin</b></>}</p>
           </form>
         </div>
       </section>

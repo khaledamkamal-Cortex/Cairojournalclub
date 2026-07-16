@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Members, Courses, Progress } from '../lib/store'
+import { supabaseEnabled } from '../lib/supabase'
 import { useStore } from '../lib/useStore'
 
 export default function Membership() {
@@ -13,16 +14,18 @@ function AuthForms() {
   const [mode, setMode] = useState('register')
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', specialty: 'Medical Oncology', institution: '', grade: 'Resident' })
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
     setError('')
+    setBusy(true)
     try {
-      if (mode === 'register') Members.register(form)
-      else Members.login(form.email, form.password)
-    } catch (err) { setError(err.message) }
+      if (mode === 'register') await Members.register(form)
+      else await Members.login(form.email, form.password)
+    } catch (err) { setError(err.message) } finally { setBusy(false) }
   }
 
   return (
@@ -68,8 +71,8 @@ function AuthForms() {
                 </div>
               </>
             )}
-            <button className="btn btn-primary" type="submit">{mode === 'register' ? 'Create account' : 'Log in'}</button>
-            <p className="form-note">Demo accounts are stored in your browser. Connect Supabase for real authentication.</p>
+            <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Please wait…' : (mode === 'register' ? 'Create account' : 'Log in')}</button>
+            <p className="form-note">{supabaseEnabled ? 'Registration creates a secure account. You may need to confirm your email before logging in.' : 'Demo accounts are stored in your browser. Connect Supabase for real authentication.'}</p>
           </form>
         </div>
       </section>
@@ -82,7 +85,7 @@ function Dashboard({ member }) {
   const [form, setForm] = useState(member)
   const courses = Courses.all()
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
-  const save = (e) => { e.preventDefault(); Members.update(member.email, form); setEdit(false) }
+  const save = async (e) => { e.preventDefault(); await Members.update(member.email, form); setEdit(false) }
 
   return (
     <>

@@ -84,7 +84,9 @@ function LessonView({ lesson, course, member, onDone }) {
           : <Link to="/membership" className="btn btn-ghost btn-sm">Log in to track progress</Link>}
       </div>
 
-      {lesson.kind === 'video' && <div className="video-frame"><iframe src={lesson.url} title={lesson.title} allowFullScreen /></div>}
+      {lesson.kind === 'video' && (lesson.url
+        ? <div className="video-frame"><iframe src={lesson.url} title={lesson.title} allowFullScreen /></div>
+        : <div className="alert alert-info">🎬 The recording for this lesson will be added soon.</div>)}
       {lesson.kind === 'article' && <div style={{ whiteSpace: 'pre-line', fontSize: '1rem' }}>{lesson.body}</div>}
       {lesson.kind === 'pdf' && <div className="alert alert-info">📄 PDF document ({lesson.pages || '?'} pages). In production this renders the uploaded PDF from Supabase Storage.</div>}
       {lesson.kind === 'quiz' && <Quiz lesson={lesson} onPass={() => { if (member && !done) Progress.toggle(member.email, course.id, lesson.id, true) }} />}

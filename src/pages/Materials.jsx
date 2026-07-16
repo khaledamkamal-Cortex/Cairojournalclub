@@ -34,8 +34,12 @@ export default function MaterialsPage() {
                 <button className="btn btn-ghost btn-sm" onClick={() => setActive(null)}>✕ Close</button>
               </div>
               {active.kind === 'video'
-                ? <div className="video-frame"><iframe src={active.url} title={active.title} allowFullScreen /></div>
-                : <div className="alert alert-info">This is a demo PDF placeholder ({active.pages || '?'} pages). In production this opens the uploaded document from Supabase Storage.</div>}
+                ? (active.url
+                    ? <div className="video-frame"><iframe src={active.url} title={active.title} allowFullScreen /></div>
+                    : <div className="alert alert-info">🎬 The recording will be added soon.</div>)
+                : (active.url && active.url !== '#'
+                    ? <div className="alert alert-info">📄 <a href={active.url} target="_blank" rel="noreferrer">Open the document ({active.pages || '?'} pages) →</a></div>
+                    : <div className="alert alert-info">📄 This document ({active.pages || '?'} pages) will be available soon.</div>)}
             </div>
           )}
 
