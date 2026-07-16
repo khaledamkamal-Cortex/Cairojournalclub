@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Placeholder emblem approximating the CAIRO circular multicolour logo.
+       Replace this file with the real logo (public/logo.svg or logo.png) when available. -->
+  <g transform="translate(60,60)">
+    <g>
+      <path d="M0,-46 A46,46 0 0 1 39.8,-23 L26,-15 A30,30 0 0 0 0,-30 Z" fill="#e63946"/>
+      <path d="M39.8,-23 A46,46 0 0 1 39.8,23 L26,15 A30,30 0 0 0 26,-15 Z" fill="#f4a300"/>
+      <path d="M39.8,23 A46,46 0 0 1 0,46 L0,30 A30,30 0 0 0 26,15 Z" fill="#7cb518"/>
+      <path d="M0,46 A46,46 0 0 1 -39.8,23 L-26,15 A30,30 0 0 0 0,30 Z" fill="#1b9cd8"/>
+      <path d="M-39.8,23 A46,46 0 0 1 -39.8,-23 L-26,-15 A30,30 0 0 0 -26,15 Z" fill="#6d2077"/>
+      <path d="M-39.8,-23 A46,46 0 0 1 0,-46 L0,-30 A30,30 0 0 0 -26,-15 Z" fill="#00a896"/>
+    </g>
+    <circle r="18" fill="#fff"/>
+    <text y="7" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="19" fill="#6d2077">C</text>
+  </g>
+</svg>
