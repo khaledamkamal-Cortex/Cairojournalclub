@@ -221,7 +221,11 @@ export const Members = {
   all: () => state.members,
   get: (email) => state.members.find((m) => m.email.toLowerCase() === email.toLowerCase()),
   register: async (m) => {
-    if (SB) { const member = await api.signUp(m); await afterLogin(member); persist(); return member }
+    if (SB) {
+      const res = await api.signUp(m)
+      if (res && res.pending) return res           // needs email confirmation
+      await afterLogin(res); persist(); return res
+    }
     if (Members.get(m.email)) throw new Error('An account with this email already exists.')
     const member = { ...m, id: uid('mem'), joined: today(), status: 'active' }
     state.members = [member, ...state.members]; state.session = member.email; persist(); return member

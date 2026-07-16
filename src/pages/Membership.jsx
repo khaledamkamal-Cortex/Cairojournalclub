@@ -14,17 +14,22 @@ function AuthForms() {
   const [mode, setMode] = useState('register')
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', specialty: 'Medical Oncology', institution: '', grade: 'Resident' })
   const [error, setError] = useState('')
+  const [info, setInfo] = useState('')
   const [busy, setBusy] = useState(false)
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
   const submit = async (e) => {
     e.preventDefault()
-    setError('')
+    setError(''); setInfo('')
     setBusy(true)
     try {
-      if (mode === 'register') await Members.register(form)
-      else await Members.login(form.email, form.password)
+      if (mode === 'register') {
+        const res = await Members.register(form)
+        if (res && res.pending) setInfo('Account created! Please check your email to confirm your address, then log in.')
+      } else {
+        await Members.login(form.email, form.password)
+      }
     } catch (err) { setError(err.message) } finally { setBusy(false) }
   }
 
@@ -43,6 +48,7 @@ function AuthForms() {
             <button className={mode === 'login' ? 'active' : ''} onClick={() => { setMode('login'); setError('') }}>Login</button>
           </div>
           {error && <div className="alert alert-error">{error}</div>}
+          {info && <div className="alert alert-success">{info}</div>}
           <form className="form" onSubmit={submit}>
             {mode === 'register' && (
               <div><label>Full name</label><input value={form.name} onChange={set('name')} required placeholder="Dr. …" /></div>

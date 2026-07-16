@@ -105,6 +105,31 @@ create table if not exists commentaries (
   created_at timestamptz default now()
 );
 
+-- Auto-create a members row whenever a new auth user signs up. Runs with
+-- elevated rights so it works even before email confirmation. Profile fields
+-- arrive as user metadata from the registration form.
+create or replace function public.handle_new_user() returns trigger
+  language plpgsql security definer set search_path = public as $fn$
+begin
+  insert into public.members (user_id, name, email, phone, grade, specialty, institution)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'name', ''),
+    new.email,
+    new.raw_user_meta_data->>'phone',
+    new.raw_user_meta_data->>'grade',
+    new.raw_user_meta_data->>'specialty',
+    new.raw_user_meta_data->>'institution'
+  )
+  on conflict (email) do nothing;
+  return new;
+end;
+$fn$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created after insert on auth.users
+  for each row execute function public.handle_new_user();
+
 -- ---------- Admins (who may manage content) ----------
 create table if not exists admins (
   user_id uuid primary key references auth.users(id) on delete cascade,

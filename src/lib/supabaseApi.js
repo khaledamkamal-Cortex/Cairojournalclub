@@ -40,15 +40,16 @@ export async function loadPublic() {
 // ---------------- Auth / members ----------------
 
 export async function signUp(profile) {
-  const { data, error } = await supabase.auth.signUp({ email: profile.email, password: profile.password })
+  // Profile fields travel as user metadata; a DB trigger (handle_new_user)
+  // creates the matching members row with elevated rights. This works whether
+  // or not email confirmation is enabled.
+  const { data, error } = await supabase.auth.signUp({
+    email: profile.email,
+    password: profile.password,
+    options: { data: { name: profile.name, phone: profile.phone, grade: profile.grade, specialty: profile.specialty, institution: profile.institution } }
+  })
   if (error) throw new Error(error.message)
-  const userId = data.user?.id
-  const row = {
-    user_id: userId, name: profile.name, email: profile.email, phone: profile.phone,
-    grade: profile.grade, specialty: profile.specialty, institution: profile.institution, status: 'active'
-  }
-  const { error: insErr } = await supabase.from('members').insert(row)
-  if (insErr && !/duplicate|unique/i.test(insErr.message)) throw new Error(insErr.message)
+  if (!data.session) return { pending: true, email: profile.email } // email confirmation required
   return fetchCurrentMember()
 }
 
