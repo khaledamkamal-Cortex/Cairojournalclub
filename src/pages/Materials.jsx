@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Events, Materials } from '../lib/store'
+import { toEmbedUrl } from '../lib/video'
 import { useStore } from '../lib/useStore'
 import { formatDate } from './Events'
 
@@ -35,7 +36,7 @@ export default function MaterialsPage() {
               </div>
               {active.kind === 'video'
                 ? (active.url
-                    ? <div className="video-frame"><iframe src={active.url} title={active.title} allowFullScreen /></div>
+                    ? <div className="video-frame"><iframe src={toEmbedUrl(active.url)} title={active.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen /></div>
                     : <div className="alert alert-info">🎬 The recording will be added soon.</div>)
                 : (active.url && active.url !== '#'
                     ? <div className="alert alert-info">📄 <a href={active.url} target="_blank" rel="noreferrer">Open the document ({active.pages || '?'} pages) →</a></div>

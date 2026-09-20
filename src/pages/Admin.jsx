@@ -162,9 +162,9 @@ function MaterialsAdmin() {
           <Field label="Type"><select value={form.kind} onChange={set('kind')}><option value="video">Video</option><option value="pdf">PDF</option><option value="slides">Slides</option><option value="article">Article</option></select></Field>
           <Field label={form.kind === 'video' ? 'Duration' : 'Pages'}><input value={form.kind === 'video' ? form.duration : form.pages} onChange={set(form.kind === 'video' ? 'duration' : 'pages')} /></Field>
         </div>
-        <Field label="URL (YouTube embed or file link)"><input value={form.url} onChange={set('url')} placeholder="https://www.youtube.com/embed/…" /></Field>
+        <Field label="URL (YouTube / Vimeo / file link)"><input value={form.url} onChange={set('url')} placeholder="https://youtu.be/… or https://vimeo.com/…" /></Field>
         <button className="btn btn-primary" type="submit">Add material</button>
-        <p className="form-note">For videos use the YouTube <b>embed</b> URL. For PDFs, connect Supabase Storage to upload files.</p>
+        <p className="form-note">For videos, paste any YouTube or Vimeo link — it is converted to the player format automatically. For PDFs, connect Supabase Storage to upload files.</p>
       </form>
 
       <div className="table-wrap">
